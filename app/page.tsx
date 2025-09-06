@@ -60,6 +60,7 @@ export default function App() {
   };
 
   if (currentView === "dashboard") {
+    window.scrollTo({ top: 0, behavior: "smooth" });
     return (
       <DashboardView
         onBack={() => setCurrentView("main")}
@@ -67,7 +68,6 @@ export default function App() {
       />
     );
   }
-
   if (currentView === "login") {
     return <LoginView onBack={() => setCurrentView("main")} />;
   }

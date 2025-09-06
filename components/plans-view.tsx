@@ -60,7 +60,7 @@ export default function PlansView({ onBack }: { onBack: () => void }) {
           <h1 className="text-3xl font-bold text-foreground">
             Escolha seu Plano
           </h1>
-          <Button variant="outline" onClick={onBack}>
+          <Button className="cursor-pointer" variant="outline" onClick={onBack}>
             Voltar
           </Button>
         </div>
@@ -116,7 +116,7 @@ export default function PlansView({ onBack }: { onBack: () => void }) {
                   </ul>
 
                   <Button
-                    className={`w-full h-12 rounded-2xl font-semibold ${
+                    className={`cursor-pointer w-full h-12 rounded-2xl font-semibold ${
                       plan.recommended
                         ? "bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
                         : "bg-secondary hover:bg-secondary/90"

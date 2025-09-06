@@ -5,7 +5,7 @@ import "@/styles/animated-background.css";
 export function AnimatedBackground() {
   return (
     <div className="animated-background">
-      {/* Floating spheres with blur effect */}
+      {/* Esferas flutuantes */}
       <div className="floating-sphere sphere-1" />
       <div className="floating-sphere sphere-2" />
       <div className="floating-sphere sphere-3" />

@@ -118,7 +118,13 @@ const salesChannelsData = [
 
 const COLORS = ["#3b82f6", "#8b5cf6", "#10b981", "#f59e0b", "#ef4444"];
 
-export default function DashboardView({ onBack, formData }) {
+export default function DashboardView({
+  onBack,
+  formData,
+}: {
+  onBack: () => void;
+  formData: any;
+}) {
   const riskLevel = 0.25; // 25% de risco (baixo)
 
   return (
@@ -130,7 +136,7 @@ export default function DashboardView({ onBack, formData }) {
           <Button
             variant="outline"
             onClick={onBack}
-            className="flex items-center gap-2"
+            className="cursor-pointer flex items-center gap-2"
           >
             <ArrowLeft className="w-4 h-4" />
             Voltar

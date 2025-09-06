@@ -41,17 +41,21 @@ export default function LoginView({ onBack }: { onBack: () => void }) {
                 className="rounded-2xl"
               />
             </div>
-            <Button className="w-full h-12 rounded-2xl bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90">
+            <Button className="cursor-pointer w-full h-12 rounded-2xl bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90">
               Entrar
             </Button>
             <Button
               variant="outline"
-              className="w-full h-12 rounded-2xl bg-transparent"
+              className="cursor-pointer w-full h-12 rounded-2xl bg-transparent"
             >
               Continuar com Google
             </Button>
             <div className="text-center">
-              <Button variant="link" onClick={onBack}>
+              <Button
+                className="cursor-pointer"
+                variant="link"
+                onClick={onBack}
+              >
                 Voltar ao início
               </Button>
             </div>
