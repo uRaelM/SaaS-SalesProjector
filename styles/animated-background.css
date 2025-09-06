@@ -1,0 +1,150 @@
+/* Estilos para o AnimatedBackground */
+.animated-background {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Estilos para as esferas flutuantes - agora com tamanho responsivo */
+.floating-sphere {
+  position: absolute;
+  border-radius: 50%; /* equivalente a rounded-full */
+  filter: blur(40px); /* equivalente a blur-2xl */
+}
+
+/* Posicionamento das esferas com tamanhos responsivos e variação de 30% */
+.sphere-1 {
+  width: 30vw; /* Tamanho base proporcional à largura da viewport */
+  height: 30vw;
+  top: 5rem; /* equivalente a top-20 */
+  left: 5rem; /* equivalente a left-20 */
+  background-color: rgba(
+    var(--primary-rgb),
+    0.2
+  ); /* equivalente a bg-primary/20 */
+  animation: float 6s ease-in-out infinite;
+}
+
+.sphere-2 {
+  width: 25vw; /* 30% menor que a esfera 1 */
+  height: 25vw;
+  top: 10rem; /* equivalente a top-40 */
+  right: 8rem; /* equivalente a right-32 */
+  background-color: rgba(
+    var(--secondary-rgb),
+    0.3
+  ); /* equivalente a bg-secondary/30 */
+  animation: float-delayed 8s ease-in-out infinite;
+}
+
+.sphere-3 {
+  width: 35vw; /* 30% maior que a esfera 1 */
+  height: 35vw;
+  bottom: 8rem; /* equivalente a bottom-32 */
+  left: 25%; /* equivalente a left-1/4 */
+  background-color: rgba(
+    var(--accent-rgb),
+    0.15
+  ); /* equivalente a bg-accent/15 */
+  animation: float-slow 10s ease-in-out infinite;
+}
+
+.sphere-4 {
+  width: 28vw; /* Variação de tamanho */
+  height: 28vw;
+  bottom: 5rem; /* equivalente a bottom-20 */
+  right: 5rem; /* equivalente a right-20 */
+  background-color: rgba(255, 140, 0, 0.35); /* Cor laranja */
+  animation: float 6s ease-in-out infinite;
+}
+
+.sphere-5 {
+  width: 32vw; /* Variação de tamanho */
+  height: 32vw;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(
+    var(--accent-rgb),
+    0.15
+  ); /* equivalente a bg-accent/15 */
+  animation: float-delayed 8s ease-in-out infinite;
+}
+
+.sphere-6 {
+  width: 27vw; /* Variação de tamanho */
+  height: 27vw;
+  top: 4rem; /* equivalente a top-16 */
+  left: 33.333%; /* equivalente a left-1/3 */
+  background-color: rgba(128, 0, 128, 0.35); /* Cor roxa */
+  animation: float-slow 10s ease-in-out infinite;
+}
+
+/* Animações com movimento em X e Y e maior amplitude (60px) */
+@keyframes float {
+  0%,
+  100% {
+    transform: translate(0px, 0px) rotate(0deg);
+  }
+  50% {
+    transform: translate(40px, -60px) rotate(180deg);
+  }
+}
+
+@keyframes float-delayed {
+  0%,
+  100% {
+    transform: translate(0px, 0px) rotate(0deg);
+  }
+  50% {
+    transform: translate(-50px, -70px) rotate(-180deg);
+  }
+}
+
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translate(0px, 0px) rotate(0deg);
+  }
+  50% {
+    transform: translate(60px, -60px) rotate(90deg);
+  }
+}
+
+/* Media query para ajustar o tamanho em telas menores */
+@media (max-width: 768px) {
+  .floating-sphere {
+    filter: blur(30px); /* Reduz o blur em telas menores */
+  }
+
+  .sphere-1 {
+    width: 50vw;
+    height: 50vw;
+  }
+
+  .sphere-2 {
+    width: 40vw;
+    height: 40vw;
+  }
+
+  .sphere-3 {
+    width: 60vw;
+    height: 60vw;
+  }
+
+  .sphere-4 {
+    width: 45vw;
+    height: 45vw;
+  }
+
+  .sphere-5 {
+    width: 55vw;
+    height: 55vw;
+  }
+
+  .sphere-6 {
+    width: 42vw;
+    height: 42vw;
+  }
+}
