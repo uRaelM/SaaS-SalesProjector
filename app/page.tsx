@@ -33,6 +33,9 @@ import { AnimatedBackground } from "@/components/animated-background";
 import DashboardView from "@/components/dashboard-view";
 import LoginView from "@/components/login-view";
 import PlansView from "@/components/plans-view";
+import { GoogleGenAI } from "@google/genai";
+import { zodToJsonSchema } from "zod-to-json-schema";
+import { dashboardSchema, DashboardData } from "@/lib/types";
 
 export default function App() {
   const [currentView, setCurrentView] = useState("main");
@@ -49,6 +52,15 @@ export default function App() {
     region: "",
     seasonality: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingStage, setLoadingStage] = useState("");
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(
+    null
+  );
+
+  const ai = new GoogleGenAI({
+    apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY || "",
+  });
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -59,12 +71,209 @@ export default function App() {
     setFormData((prev) => ({ ...prev, salesFile: file || null }));
   };
 
+  const isFormEmpty = () => {
+    return (
+      !formData.salesFile &&
+      !formData.budget &&
+      !formData.niche &&
+      !formData.context &&
+      !formData.growthGoal &&
+      !formData.fixedCosts &&
+      !formData.variableCosts &&
+      !formData.productMargins &&
+      !formData.salesChannels &&
+      !formData.region
+    );
+  };
+
+  const readCSVFile = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target?.result as string);
+      reader.onerror = reject;
+      reader.readAsText(file);
+    });
+  };
+
+  const generateAIInsights = async () => {
+    setIsLoading(true);
+    setLoadingStage("Preparando análise...");
+
+    try {
+      let csvContent = "";
+      if (formData.salesFile) {
+        setLoadingStage("Lendo arquivo CSV...");
+        csvContent = await readCSVFile(formData.salesFile);
+      }
+
+      setLoadingStage("Analisando dados com IA...");
+
+      const prompt = `
+Você é um analista de dados especializado em projeções de vendas e análise empresarial.
+
+**DADOS HISTÓRICOS DE VENDAS (CSV):**
+${
+  csvContent ||
+  "Não fornecido - use valores estimados baseados no orçamento e nicho"
+}
+
+**DADOS DA EMPRESA:**
+- Orçamento: R$ ${formData.budget || "Não informado"}
+- Nicho de Atuação: ${formData.niche || "Não informado"}
+- Meta de Crescimento: ${formData.growthGoal || "Não informado"}%
+- Custos Fixos Mensais: R$ ${formData.fixedCosts || "Não informado"}
+- Custos Variáveis: ${formData.variableCosts || "Não informado"}%
+- Margens de Lucro por Produto: ${formData.productMargins || "Não informado"}
+- Canais de Vendas: ${formData.salesChannels || "Não informado"}
+- Região de Atuação: ${formData.region || "Não informado"}
+- Contexto Adicional: ${formData.context || "Não informado"}
+
+**TAREFA:**
+Analise os dados históricos do CSV (se fornecido) e as informações da empresa para gerar projeções completas e realistas.
+
+Retorne um JSON com a seguinte estrutura EXATA (preencha com dados calculados):
+
+{
+  "salesProjection": [
+    {"month": "Jan", "vendas_reais": 45000, "projecao": 48000},
+    {"month": "Fev", "vendas_reais": 52000, "projecao": 55000},
+    {"month": "Mar", "vendas_reais": 48000, "projecao": 52000},
+    {"month": "Abr", "vendas_reais": 61000, "projecao": 65000},
+    {"month": "Mai", "vendas_reais": 55000, "projecao": 60000},
+    {"month": "Jun", "vendas_reais": 67000, "projecao": 72000},
+    {"month": "Jul", "vendas_reais": null, "projecao": 75000},
+    {"month": "Ago", "vendas_reais": null, "projecao": 78000},
+    {"month": "Set", "vendas_reais": null, "projecao": 82000},
+    {"month": "Out", "vendas_reais": null, "projecao": 85000},
+    {"month": "Nov", "vendas_reais": null, "projecao": 90000},
+    {"month": "Dez", "vendas_reais": null, "projecao": 95000}
+  ],
+  "profitProjection": [
+    {"month": "Jan", "receita": 45000, "custos": 32000, "lucro": 13000},
+    {"month": "Fev", "receita": 52000, "custos": 35000, "lucro": 17000},
+    {"month": "Mar", "receita": 48000, "custos": 33000, "lucro": 15000},
+    {"month": "Abr", "receita": 61000, "custos": 38000, "lucro": 23000},
+    {"month": "Mai", "receita": 55000, "custos": 36000, "lucro": 19000},
+    {"month": "Jun", "receita": 67000, "custos": 40000, "lucro": 27000},
+    {"month": "Jul", "receita": 75000, "custos": 42000, "lucro": 33000},
+    {"month": "Ago", "receita": 78000, "custos": 43000, "lucro": 35000},
+    {"month": "Set", "receita": 82000, "custos": 45000, "lucro": 37000},
+    {"month": "Out", "receita": 85000, "custos": 46000, "lucro": 39000},
+    {"month": "Nov", "receita": 90000, "custos": 48000, "lucro": 42000},
+    {"month": "Dez", "receita": 95000, "custos": 50000, "lucro": 45000}
+  ],
+  "investmentDistribution": [
+    {"name": "Marketing", "value": 35, "color": "#3b82f6"},
+    {"name": "Estoque", "value": 25, "color": "#8b5cf6"},
+    {"name": "RH", "value": 20, "color": "#10b981"},
+    {"name": "Infraestrutura", "value": 15, "color": "#f59e0b"},
+    {"name": "P&D", "value": 5, "color": "#ef4444"}
+  ],
+  "productRanking": [
+    {"produto": "Produto A", "potencial": 85, "margem": 45},
+    {"produto": "Produto B", "potencial": 72, "margem": 38},
+    {"produto": "Produto C", "potencial": 68, "margem": 42},
+    {"produto": "Produto D", "potencial": 55, "margem": 28},
+    {"produto": "Produto E", "potencial": 48, "margem": 35}
+  ],
+  "seasonality": [
+    {"mes": "Jan", "vendas": 45},
+    {"mes": "Fev", "vendas": 52},
+    {"mes": "Mar", "vendas": 48},
+    {"mes": "Abr", "vendas": 61},
+    {"mes": "Mai", "vendas": 55},
+    {"mes": "Jun", "vendas": 67},
+    {"mes": "Jul", "vendas": 58},
+    {"mes": "Ago", "vendas": 62},
+    {"mes": "Set", "vendas": 70},
+    {"mes": "Out", "vendas": 75},
+    {"mes": "Nov", "vendas": 85},
+    {"mes": "Dez", "vendas": 95}
+  ],
+  "regionData": [
+    {"regiao": "Sudeste", "atual": 45, "projecao": 52},
+    {"regiao": "Sul", "atual": 28, "projecao": 35},
+    {"regiao": "Nordeste", "atual": 18, "projecao": 25},
+    {"regiao": "Centro-Oeste", "atual": 12, "projecao": 18},
+    {"regiao": "Norte", "atual": 8, "projecao": 12}
+  ],
+  "salesChannels": [
+    {"canal": "E-commerce", "vendas": 45, "roi": 4.2},
+    {"canal": "Loja Física", "vendas": 35, "roi": 3.8},
+    {"canal": "Marketplace", "vendas": 28, "roi": 3.5},
+    {"canal": "WhatsApp", "vendas": 22, "roi": 5.1},
+    {"canal": "Redes Sociais", "vendas": 18, "roi": 4.8}
+  ],
+  "riskLevel": 0.25,
+  "executiveSummary": {
+    "decemberProjection": "R$ 95k",
+    "marketingRecommendation": 35,
+    "bestChannel": {"name": "WhatsApp", "roi": 5.1}
+  },
+  "aiInsights": "Análise narrativa detalhada com insights, recomendações e estratégias baseadas nos dados fornecidos..."
+}
+
+**INSTRUÇÕES CRÍTICAS:**
+1. Se CSV foi fornecido, USE os dados reais para calcular projeções baseadas em tendências históricas
+2. Calcule médias móveis, sazonalidade e tendências de crescimento do CSV
+3. Aplique a meta de crescimento informada (${
+        formData.growthGoal
+      }%) nas projeções futuras
+4. Use custos fixos (${formData.fixedCosts}) e variáveis (${
+        formData.variableCosts
+      }%) nos cálculos de lucro
+5. Considere as margens por produto fornecidas: ${
+        formData.productMargins || "use estimativas realistas"
+      }
+6. Adapte os canais de vendas à escolha do usuário: ${
+        formData.salesChannels || "múltiplos canais"
+      }
+7. Ajuste a distribuição regional com foco em: ${formData.region || "nacional"}
+8. O nicho ${formData.niche || "geral"} deve influenciar margens e ROI
+9. Todos os valores numéricos devem ser CALCULADOS e REALISTAS, não aleatórios
+10. vendas_reais deve ser null para meses futuros (a partir do mês atual)
+11. Os valores devem mostrar uma progressão lógica e coerente
+12. aiInsights deve conter análise detalhada em português com insights acionáveis
+`;
+
+      // Generate with JSON schema enforcement
+      const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: prompt,
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: zodToJsonSchema(dashboardSchema),
+        },
+      });
+
+      setLoadingStage("Processando resultados...");
+
+      const parsedData = JSON.parse(response.text || "{}");
+      const validatedData = dashboardSchema.parse(parsedData);
+
+      setDashboardData(validatedData);
+      setCurrentView("dashboard");
+    } catch (error) {
+      console.error("Erro ao gerar insights:", error);
+      if (error instanceof Error) {
+        alert(
+          `Erro ao processar dados: ${error.message}\n\nVerifique o arquivo CSV e os dados informados.`
+        );
+      } else {
+        alert("Erro ao gerar insights. Por favor, tente novamente.");
+      }
+    } finally {
+      setIsLoading(false);
+      setLoadingStage("");
+    }
+  };
+
   if (currentView === "dashboard") {
     window.scrollTo({ top: 0, behavior: "smooth" });
     return (
       <DashboardView
         onBack={() => setCurrentView("main")}
-        formData={formData}
+        dashboardData={dashboardData}
       />
     );
   }
@@ -322,11 +531,16 @@ export default function App() {
               </div>
 
               <Button
-                className="cursor-pointer w-full h-12 text-lg font-semibold rounded-2xl bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 transition-all duration-300 shadow-lg"
-                onClick={() => setCurrentView("dashboard")}
+                className="cursor-pointer w-full h-12 text-lg font-semibold rounded-2xl bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={generateAIInsights}
+                disabled={isLoading || isFormEmpty()}
               >
                 <BarChart3 className="w-5 h-5 mr-2" />
-                Gerar Projeções e Análises
+                {isLoading
+                  ? loadingStage || "Gerando insights com IA..."
+                  : isFormEmpty()
+                  ? "Preencha pelo menos um campo"
+                  : "Gerar Projeções e Análises"}
               </Button>
             </CardContent>
           </Card>

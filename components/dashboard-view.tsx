@@ -7,6 +7,8 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AnimatedBackground } from "@/components/animated-background";
+import { DashboardData } from "@/lib/types";
+import ReactMarkdown from "react-markdown";
 import {
   LineChart,
   Line,
@@ -120,12 +122,30 @@ const COLORS = ["#3b82f6", "#8b5cf6", "#10b981", "#f59e0b", "#ef4444"];
 
 export default function DashboardView({
   onBack,
-  formData,
+  dashboardData,
 }: {
   onBack: () => void;
-  formData: any;
+  dashboardData: DashboardData | null;
 }) {
-  const riskLevel = 0.25; // 25% de risco (baixo)
+  const data = dashboardData || {
+    salesProjection: salesProjectionData,
+    profitProjection: profitProjectionData,
+    investmentDistribution: investmentDistributionData,
+    productRanking: productRankingData,
+    seasonality: seasonalityData,
+    regionData: regionData,
+    salesChannels: salesChannelsData,
+    riskLevel: 0.25,
+    executiveSummary: {
+      decemberProjection: "R$ 95k",
+      marketingRecommendation: 35,
+      bestChannel: { name: "WhatsApp", roi: 5.1 },
+    },
+    aiInsights:
+      "Análise não disponível. Use dados reais para gerar insights personalizados.",
+  };
+
+  const riskLevel = data.riskLevel;
 
   return (
     <div className="min-h-screen bg-background relative">
@@ -158,7 +178,7 @@ export default function DashboardView({
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={salesProjectionData}>
+                  <LineChart data={data.salesProjection}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                     <XAxis dataKey="month" stroke="#9ca3af" />
                     <YAxis stroke="#9ca3af" />
@@ -242,7 +262,7 @@ export default function DashboardView({
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
-                  <ComposedChart data={profitProjectionData}>
+                  <ComposedChart data={data.profitProjection}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                     <XAxis dataKey="month" stroke="#9ca3af" />
                     <YAxis stroke="#9ca3af" />
@@ -286,7 +306,7 @@ export default function DashboardView({
                 <ResponsiveContainer width="100%" height={250}>
                   <PieChart>
                     <Pie
-                      data={investmentDistributionData}
+                      data={data.investmentDistribution}
                       cx="50%"
                       cy="50%"
                       labelLine={false}
@@ -295,7 +315,7 @@ export default function DashboardView({
                       fill="#8884d8"
                       dataKey="value"
                     >
-                      {investmentDistributionData.map((entry, index) => (
+                      {data.investmentDistribution.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
@@ -326,15 +346,10 @@ export default function DashboardView({
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={productRankingData} layout="horizontal">
+                  <BarChart data={data.productRanking}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis type="number" stroke="#9ca3af" />
-                    <YAxis
-                      dataKey="produto"
-                      type="category"
-                      stroke="#9ca3af"
-                      width={80}
-                    />
+                    <XAxis dataKey="produto" stroke="#9ca3af" />
+                    <YAxis stroke="#9ca3af" />
                     <Tooltip
                       contentStyle={{
                         backgroundColor: "#1f2937",
@@ -348,6 +363,13 @@ export default function DashboardView({
                       dataKey="potencial"
                       fill="#8b5cf6"
                       name="Potencial %"
+                      radius={[8, 8, 0, 0]}
+                    />
+                    <Bar
+                      dataKey="margem"
+                      fill="#10b981"
+                      name="Margem %"
+                      radius={[8, 8, 0, 0]}
                     />
                   </BarChart>
                 </ResponsiveContainer>
@@ -369,7 +391,7 @@ export default function DashboardView({
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={250}>
-                  <AreaChart data={seasonalityData}>
+                  <AreaChart data={data.seasonality}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                     <XAxis dataKey="mes" stroke="#9ca3af" />
                     <YAxis stroke="#9ca3af" />
@@ -407,7 +429,7 @@ export default function DashboardView({
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={regionData}>
+                  <BarChart data={data.regionData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                     <XAxis dataKey="regiao" stroke="#9ca3af" />
                     <YAxis stroke="#9ca3af" />
@@ -444,7 +466,7 @@ export default function DashboardView({
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={250}>
-                  <ComposedChart data={salesChannelsData}>
+                  <ComposedChart data={data.salesChannels}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                     <XAxis dataKey="canal" stroke="#9ca3af" />
                     <YAxis yAxisId="left" stroke="#9ca3af" />
@@ -496,30 +518,112 @@ export default function DashboardView({
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="text-center">
                   <div className="text-3xl font-bold text-primary mb-2">
-                    R$ 95k
+                    {data.executiveSummary.decemberProjection}
                   </div>
                   <p className="text-sm text-muted-foreground">
                     Projeção de vendas para dezembro
                   </p>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-accent mb-2">35%</div>
+                  <div className="text-3xl font-bold text-accent mb-2">
+                    {data.executiveSummary.marketingRecommendation}%
+                  </div>
                   <p className="text-sm text-muted-foreground">
                     Recomendação de investimento em marketing
                   </p>
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold text-secondary mb-2">
-                    WhatsApp
+                    {data.executiveSummary.bestChannel.name}
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Canal com melhor ROI (5.1x)
+                    Canal com melhor ROI (
+                    {data.executiveSummary.bestChannel.roi}x)
                   </p>
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
+
+        {/* AI Insights Section */}
+        {data.aiInsights &&
+          data.aiInsights !==
+            "Análise não disponível. Use dados reais para gerar insights personalizados." && (
+            <div className="mt-8">
+              <Card className="border border-border/50 bg-card/80 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle>Análise Detalhada com IA</CardTitle>
+                  <CardDescription>
+                    Insights e recomendações gerados por inteligência artificial
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="prose prose-invert max-w-none text-foreground">
+                    <ReactMarkdown
+                      components={{
+                        h1: ({ children }) => (
+                          <h1 className="text-2xl font-bold mb-4 text-primary">
+                            {children}
+                          </h1>
+                        ),
+                        h2: ({ children }) => (
+                          <h2 className="text-xl font-semibold mb-3 text-accent">
+                            {children}
+                          </h2>
+                        ),
+                        h3: ({ children }) => (
+                          <h3 className="text-lg font-semibold mb-2 text-foreground">
+                            {children}
+                          </h3>
+                        ),
+                        p: ({ children }) => (
+                          <p className="mb-3 text-muted-foreground leading-relaxed">
+                            {children}
+                          </p>
+                        ),
+                        ul: ({ children }) => (
+                          <ul className="list-disc list-inside mb-3 space-y-2">
+                            {children}
+                          </ul>
+                        ),
+                        ol: ({ children }) => (
+                          <ol className="list-decimal list-inside mb-3 space-y-2">
+                            {children}
+                          </ol>
+                        ),
+                        li: ({ children }) => (
+                          <li className="text-muted-foreground ml-4">
+                            {children}
+                          </li>
+                        ),
+                        strong: ({ children }) => (
+                          <strong className="font-bold text-foreground">
+                            {children}
+                          </strong>
+                        ),
+                        em: ({ children }) => (
+                          <em className="italic text-accent">{children}</em>
+                        ),
+                        code: ({ children }) => (
+                          <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-primary">
+                            {children}
+                          </code>
+                        ),
+                        blockquote: ({ children }) => (
+                          <blockquote className="border-l-4 border-primary pl-4 italic my-4 text-muted-foreground">
+                            {children}
+                          </blockquote>
+                        ),
+                      }}
+                    >
+                      {data.aiInsights}
+                    </ReactMarkdown>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
       </div>
     </div>
   );
