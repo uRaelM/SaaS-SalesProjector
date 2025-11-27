@@ -34,118 +34,44 @@ import {
   DollarSign,
   Target,
   Award,
-  Calendar,
   MapPin,
   ShoppingCart,
   AlertTriangle,
 } from "lucide-react";
-
-// Dados simulados para os gráficos
-const salesProjectionData = [
-  { month: "Jan", vendas_reais: 45000, projecao: 48000 },
-  { month: "Fev", vendas_reais: 52000, projecao: 55000 },
-  { month: "Mar", vendas_reais: 48000, projecao: 52000 },
-  { month: "Abr", vendas_reais: 61000, projecao: 65000 },
-  { month: "Mai", vendas_reais: 55000, projecao: 60000 },
-  { month: "Jun", vendas_reais: 67000, projecao: 72000 },
-  { month: "Jul", vendas_reais: null, projecao: 75000 },
-  { month: "Ago", vendas_reais: null, projecao: 78000 },
-  { month: "Set", vendas_reais: null, projecao: 82000 },
-  { month: "Out", vendas_reais: null, projecao: 85000 },
-  { month: "Nov", vendas_reais: null, projecao: 90000 },
-  { month: "Dez", vendas_reais: null, projecao: 95000 },
-];
-
-const profitProjectionData = [
-  { month: "Jan", receita: 45000, custos: 32000, lucro: 13000 },
-  { month: "Fev", receita: 52000, custos: 35000, lucro: 17000 },
-  { month: "Mar", receita: 48000, custos: 33000, lucro: 15000 },
-  { month: "Abr", receita: 61000, custos: 38000, lucro: 23000 },
-  { month: "Mai", receita: 55000, custos: 36000, lucro: 19000 },
-  { month: "Jun", receita: 67000, custos: 40000, lucro: 27000 },
-  { month: "Jul", receita: 75000, custos: 42000, lucro: 33000 },
-  { month: "Ago", receita: 78000, custos: 43000, lucro: 35000 },
-  { month: "Set", receita: 82000, custos: 45000, lucro: 37000 },
-  { month: "Out", receita: 85000, custos: 46000, lucro: 39000 },
-  { month: "Nov", receita: 90000, custos: 48000, lucro: 42000 },
-  { month: "Dez", receita: 95000, custos: 50000, lucro: 45000 },
-];
-
-const investmentDistributionData = [
-  { name: "Marketing", value: 35, color: "#3b82f6" },
-  { name: "Estoque", value: 25, color: "#8b5cf6" },
-  { name: "RH", value: 20, color: "#10b981" },
-  { name: "Infraestrutura", value: 15, color: "#f59e0b" },
-  { name: "P&D", value: 5, color: "#ef4444" },
-];
-
-const productRankingData = [
-  { produto: "Produto A", potencial: 85, margem: 45 },
-  { produto: "Produto B", potencial: 72, margem: 38 },
-  { produto: "Produto C", potencial: 68, margem: 42 },
-  { produto: "Produto D", potencial: 55, margem: 28 },
-  { produto: "Produto E", potencial: 48, margem: 35 },
-];
-
-const seasonalityData = [
-  { mes: "Jan", vendas: 45 },
-  { mes: "Fev", vendas: 52 },
-  { mes: "Mar", vendas: 48 },
-  { mes: "Abr", vendas: 61 },
-  { mes: "Mai", vendas: 55 },
-  { mes: "Jun", vendas: 67 },
-  { mes: "Jul", vendas: 58 },
-  { mes: "Ago", vendas: 62 },
-  { mes: "Set", vendas: 70 },
-  { mes: "Out", vendas: 75 },
-  { mes: "Nov", vendas: 85 },
-  { mes: "Dez", vendas: 95 },
-];
-
-const regionData = [
-  { regiao: "Sudeste", atual: 45, projecao: 52 },
-  { regiao: "Sul", atual: 28, projecao: 35 },
-  { regiao: "Nordeste", atual: 18, projecao: 25 },
-  { regiao: "Centro-Oeste", atual: 12, projecao: 18 },
-  { regiao: "Norte", atual: 8, projecao: 12 },
-];
-
-const salesChannelsData = [
-  { canal: "E-commerce", vendas: 45, roi: 4.2 },
-  { canal: "Loja Física", vendas: 35, roi: 3.8 },
-  { canal: "Marketplace", vendas: 28, roi: 3.5 },
-  { canal: "WhatsApp", vendas: 22, roi: 5.1 },
-  { canal: "Redes Sociais", vendas: 18, roi: 4.8 },
-];
-
-const COLORS = ["#3b82f6", "#8b5cf6", "#10b981", "#f59e0b", "#ef4444"];
 
 export default function DashboardView({
   onBack,
   dashboardData,
 }: {
   onBack: () => void;
-  dashboardData: DashboardData | null;
+  dashboardData: DashboardData;
 }) {
-  const data = dashboardData || {
-    salesProjection: salesProjectionData,
-    profitProjection: profitProjectionData,
-    investmentDistribution: investmentDistributionData,
-    productRanking: productRankingData,
-    seasonality: seasonalityData,
-    regionData: regionData,
-    salesChannels: salesChannelsData,
-    riskLevel: 0.25,
-    executiveSummary: {
-      decemberProjection: "R$ 95k",
-      marketingRecommendation: 35,
-      bestChannel: { name: "WhatsApp", roi: 5.1 },
-    },
-    aiInsights:
-      "Análise não disponível. Use dados reais para gerar insights personalizados.",
+  if (!dashboardData) {
+    return (
+      <div className="min-h-screen bg-background relative flex items-center justify-center">
+        <AnimatedBackground />
+        <div className="relative z-10 text-center">
+          <p className="text-xl text-muted-foreground">
+            Nenhum dado disponível. Por favor, volte e gere uma nova análise.
+          </p>
+          <Button onClick={onBack} className="mt-4">
+            Voltar
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const riskLevel = dashboardData.riskLevel;
+
+  // Determine risk level text and color based on percentage
+  const getRiskStatus = (risk: number) => {
+    if (risk < 0.3) return { text: "Baixo Risco", color: "text-green-500" };
+    if (risk < 0.7) return { text: "Risco Moderado", color: "text-yellow-500" };
+    return { text: "Alto Risco", color: "text-red-500" };
   };
 
-  const riskLevel = data.riskLevel;
+  const riskStatus = getRiskStatus(riskLevel);
 
   return (
     <div className="min-h-screen bg-background relative">
@@ -178,7 +104,7 @@ export default function DashboardView({
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={data.salesProjection}>
+                  <LineChart data={dashboardData.salesProjection}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                     <XAxis dataKey="month" stroke="#9ca3af" />
                     <YAxis stroke="#9ca3af" />
@@ -198,6 +124,8 @@ export default function DashboardView({
                       strokeWidth={3}
                       name="Vendas Reais"
                       connectNulls={false}
+                      dot={{ fill: "#3b82f6", r: 4 }}
+                      activeDot={{ r: 6 }}
                     />
                     <Line
                       type="monotone"
@@ -239,9 +167,15 @@ export default function DashboardView({
                   />
                 </div>
                 <div className="text-center mt-4">
-                  <p className="text-2xl font-bold text-accent">Baixo Risco</p>
+                  <p className={`text-2xl font-bold ${riskStatus.color}`}>
+                    {riskStatus.text}
+                  </p>
                   <p className="text-sm text-muted-foreground">
-                    Fluxo de caixa estável
+                    {riskLevel < 0.3
+                      ? "Fluxo de caixa estável"
+                      : riskLevel < 0.7
+                      ? "Atenção ao fluxo de caixa"
+                      : "Risco crítico de fluxo de caixa"}
                   </p>
                 </div>
               </CardContent>
@@ -262,7 +196,7 @@ export default function DashboardView({
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
-                  <ComposedChart data={data.profitProjection}>
+                  <ComposedChart data={dashboardData.profitProjection}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                     <XAxis dataKey="month" stroke="#9ca3af" />
                     <YAxis stroke="#9ca3af" />
@@ -306,7 +240,7 @@ export default function DashboardView({
                 <ResponsiveContainer width="100%" height={250}>
                   <PieChart>
                     <Pie
-                      data={data.investmentDistribution}
+                      data={dashboardData.investmentDistribution}
                       cx="50%"
                       cy="50%"
                       labelLine={false}
@@ -315,7 +249,7 @@ export default function DashboardView({
                       fill="#8884d8"
                       dataKey="value"
                     >
-                      {data.investmentDistribution.map((entry, index) => (
+                      {dashboardData.investmentDistribution.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
@@ -346,7 +280,7 @@ export default function DashboardView({
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={data.productRanking}>
+                  <BarChart data={dashboardData.productRanking}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                     <XAxis dataKey="produto" stroke="#9ca3af" />
                     <YAxis stroke="#9ca3af" />
@@ -377,23 +311,23 @@ export default function DashboardView({
             </Card>
           </div>
 
-          {/* 5. Mapa de Sazonalidade */}
+          {/* 5. Taxa de Crescimento Mensal */}
           <div className="lg:col-span-6">
             <Card className="border border-border/50 bg-card/80 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Calendar className="w-5 h-5 text-secondary" />
-                  Mapa de Sazonalidade
+                  <TrendingUp className="w-5 h-5 text-secondary" />
+                  Taxa de Crescimento Mensal
                 </CardTitle>
                 <CardDescription>
-                  Padrões de vendas ao longo do ano
+                  Evolução percentual vs meta de crescimento
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={250}>
-                  <AreaChart data={data.seasonality}>
+                  <ComposedChart data={dashboardData.growthRate}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis dataKey="mes" stroke="#9ca3af" />
+                    <XAxis dataKey="month" stroke="#9ca3af" />
                     <YAxis stroke="#9ca3af" />
                     <Tooltip
                       contentStyle={{
@@ -402,16 +336,24 @@ export default function DashboardView({
                         borderRadius: "8px",
                       }}
                       labelStyle={{ color: "#f9fafb" }}
+                      formatter={(value: number) => `${value.toFixed(1)}%`}
                     />
-                    <Area
+                    <Legend />
+                    <Bar
+                      dataKey="taxa_crescimento"
+                      fill="#3b82f6"
+                      name="Taxa de Crescimento %"
+                      radius={[8, 8, 0, 0]}
+                    />
+                    <Line
                       type="monotone"
-                      dataKey="vendas"
+                      dataKey="meta_crescimento"
                       stroke="#10b981"
-                      fill="#10b981"
-                      fillOpacity={0.3}
-                      name="Vendas (mil)"
+                      strokeWidth={3}
+                      strokeDasharray="5 5"
+                      name="Meta de Crescimento %"
                     />
-                  </AreaChart>
+                  </ComposedChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
@@ -429,7 +371,7 @@ export default function DashboardView({
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={data.regionData}>
+                  <BarChart data={dashboardData.regionData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                     <XAxis dataKey="regiao" stroke="#9ca3af" />
                     <YAxis stroke="#9ca3af" />
@@ -466,7 +408,7 @@ export default function DashboardView({
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={250}>
-                  <ComposedChart data={data.salesChannels}>
+                  <ComposedChart data={dashboardData.salesChannels}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                     <XAxis dataKey="canal" stroke="#9ca3af" />
                     <YAxis yAxisId="left" stroke="#9ca3af" />
@@ -518,7 +460,7 @@ export default function DashboardView({
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="text-center">
                   <div className="text-3xl font-bold text-primary mb-2">
-                    {data.executiveSummary.decemberProjection}
+                    {dashboardData.executiveSummary.decemberProjection}
                   </div>
                   <p className="text-sm text-muted-foreground">
                     Projeção de vendas para dezembro
@@ -526,7 +468,7 @@ export default function DashboardView({
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold text-accent mb-2">
-                    {data.executiveSummary.marketingRecommendation}%
+                    {dashboardData.executiveSummary.marketingRecommendation}%
                   </div>
                   <p className="text-sm text-muted-foreground">
                     Recomendação de investimento em marketing
@@ -534,11 +476,11 @@ export default function DashboardView({
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold text-secondary mb-2">
-                    {data.executiveSummary.bestChannel.name}
+                    {dashboardData.executiveSummary.bestChannel.name}
                   </div>
                   <p className="text-sm text-muted-foreground">
                     Canal com melhor ROI (
-                    {data.executiveSummary.bestChannel.roi}x)
+                    {dashboardData.executiveSummary.bestChannel.roi}x)
                   </p>
                 </div>
               </div>
@@ -547,9 +489,7 @@ export default function DashboardView({
         </div>
 
         {/* AI Insights Section */}
-        {data.aiInsights &&
-          data.aiInsights !==
-            "Análise não disponível. Use dados reais para gerar insights personalizados." && (
+        {dashboardData.aiInsights && (
             <div className="mt-8">
               <Card className="border border-border/50 bg-card/80 backdrop-blur-sm">
                 <CardHeader>
@@ -617,7 +557,7 @@ export default function DashboardView({
                         ),
                       }}
                     >
-                      {data.aiInsights}
+                      {dashboardData.aiInsights}
                     </ReactMarkdown>
                   </div>
                 </CardContent>

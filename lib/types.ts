@@ -31,10 +31,11 @@ export const dashboardSchema = z.object({
       margem: z.number(),
     })
   ),
-  seasonality: z.array(
+  growthRate: z.array(
     z.object({
-      mes: z.string(),
-      vendas: z.number(),
+      month: z.string(),
+      taxa_crescimento: z.number(),
+      meta_crescimento: z.number(),
     })
   ),
   regionData: z.array(
@@ -69,7 +70,7 @@ export type SalesProjection = z.infer<typeof dashboardSchema.shape.salesProjecti
 export type ProfitProjection = z.infer<typeof dashboardSchema.shape.profitProjection>;
 export type InvestmentDistribution = z.infer<typeof dashboardSchema.shape.investmentDistribution>;
 export type ProductRanking = z.infer<typeof dashboardSchema.shape.productRanking>;
-export type Seasonality = z.infer<typeof dashboardSchema.shape.seasonality>;
+export type GrowthRate = z.infer<typeof dashboardSchema.shape.growthRate>;
 export type RegionData = z.infer<typeof dashboardSchema.shape.regionData>;
 export type SalesChannels = z.infer<typeof dashboardSchema.shape.salesChannels>;
 export type ExecutiveSummary = z.infer<typeof dashboardSchema.shape.executiveSummary>;

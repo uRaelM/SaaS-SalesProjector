@@ -109,29 +109,96 @@ export default function App() {
       setLoadingStage("Analisando dados com IA...");
 
       const prompt = `
-Você é um analista de dados especializado em projeções de vendas e análise empresarial.
+Você é um Analista de Inteligência Comercial Sênior, especialista em modelagem estatística, previsão de demanda, análise de sazonalidade brasileira, projeção de vendas realista, elasticidade de preço, comportamento do consumidor e estratégia de investimentos por nicho.
 
-**DADOS HISTÓRICOS DE VENDAS (CSV):**
+Seu objetivo é gerar projeções 100% realistas, coerentes e fundamentadas, levando em conta:
+
+Tendências históricas (via CSV)
+
+Sazonalidade REAL brasileira para o nicho informado
+
+Elasticidade de demanda do nicho
+
+Indicadores macroeconômicos (inflação, datas comemorativas, períodos fracos)
+
+Metas de crescimento
+
+Custos, margem, ROI por canal e região
+
+Estimativa de investimento ideal para expansão
+
+Seleção dos melhores setores de investimento
+
+**DADOS HISTÓRICOS DE VENDAS (CSV)**
+
 ${
   csvContent ||
-  "Não fornecido - use valores estimados baseados no orçamento e nicho"
+  "Não fornecido — utilize estimativas realistas baseadas no nicho e orçamento"
 }
 
 **DADOS DA EMPRESA:**
-- Orçamento: R$ ${formData.budget || "Não informado"}
-- Nicho de Atuação: ${formData.niche || "Não informado"}
-- Meta de Crescimento: ${formData.growthGoal || "Não informado"}%
-- Custos Fixos Mensais: R$ ${formData.fixedCosts || "Não informado"}
-- Custos Variáveis: ${formData.variableCosts || "Não informado"}%
-- Margens de Lucro por Produto: ${formData.productMargins || "Não informado"}
-- Canais de Vendas: ${formData.salesChannels || "Não informado"}
-- Região de Atuação: ${formData.region || "Não informado"}
-- Contexto Adicional: ${formData.context || "Não informado"}
 
-**TAREFA:**
-Analise os dados históricos do CSV (se fornecido) e as informações da empresa para gerar projeções completas e realistas.
+Orçamento: R$ ${formData.budget || "Não informado"}
 
-Retorne um JSON com a seguinte estrutura EXATA (preencha com dados calculados):
+Nicho: ${formData.niche || "Não informado"}
+
+Meta de Crescimento: ${formData.growthGoal || "Não informado"}%
+
+Custos Fixos: R$ ${formData.fixedCosts || "Não informado"}
+
+Custos Variáveis (%): ${formData.variableCosts || "Não informado"}%
+
+Margens por Produto: ${formData.productMargins || "Não informado"}
+
+Canais de Venda: ${formData.salesChannels || "Não informado"}
+
+Região: ${formData.region || "Não informado"}
+
+Contexto Adicional: ${formData.context || "Não informado"}
+
+**TAREFA PRINCIPAL:**
+
+Gerar um diagnóstico completo e realista que inclua:
+
+Projeção de vendas mensal realista para 12 meses
+
+Aplicar média móvel, tendência linear/exponencial, decomposição sazonal (modelo multiplicativo)
+
+Considerar datas fortes brasileiras: Janeiro fraco, Carnaval, Dia das Mães, Dia dos Pais, Black Friday, Natal etc.
+
+Ajustar para o nicho (ex: moda, alimentação, saúde, tecnologia, estética etc.)
+
+Projeção de lucro considerando:
+
+Custos fixos
+
+Custos variáveis %
+
+Margens por produto
+
+Elasticidade de demanda estimada
+
+Ranking de produtos com maior potencial de crescimento no nicho
+
+Canais ideais com melhor ROI baseado no nicho + região
+
+Projeção regional baseada no comportamento real de consumo do Brasil
+
+Recomendação de investimento:
+
+Distribuição ideal
+
+Setores mais estratégicos
+
+% sugeridos
+
+Justificativa técnica
+
+Análise de risco quantitativa (0 a 1)
+
+Resumo executivo para tomada de decisão
+
+**FORMATO DE ENTREGA (OBRIGATÓRIO e EXATO):**
 
 {
   "salesProjection": [
@@ -176,19 +243,19 @@ Retorne um JSON com a seguinte estrutura EXATA (preencha com dados calculados):
     {"produto": "Produto D", "potencial": 55, "margem": 28},
     {"produto": "Produto E", "potencial": 48, "margem": 35}
   ],
-  "seasonality": [
-    {"mes": "Jan", "vendas": 45},
-    {"mes": "Fev", "vendas": 52},
-    {"mes": "Mar", "vendas": 48},
-    {"mes": "Abr", "vendas": 61},
-    {"mes": "Mai", "vendas": 55},
-    {"mes": "Jun", "vendas": 67},
-    {"mes": "Jul", "vendas": 58},
-    {"mes": "Ago", "vendas": 62},
-    {"mes": "Set", "vendas": 70},
-    {"mes": "Out", "vendas": 75},
-    {"mes": "Nov", "vendas": 85},
-    {"mes": "Dez", "vendas": 95}
+  "growthRate": [
+    {"month": "Jan", "taxa_crescimento": 0, "meta_crescimento": 5},
+    {"month": "Fev", "taxa_crescimento": 15.5, "meta_crescimento": 5},
+    {"month": "Mar", "taxa_crescimento": -7.7, "meta_crescimento": 5},
+    {"month": "Abr", "taxa_crescimento": 27.1, "meta_crescimento": 5},
+    {"month": "Mai", "taxa_crescimento": -9.8, "meta_crescimento": 5},
+    {"month": "Jun", "taxa_crescimento": 21.8, "meta_crescimento": 5},
+    {"month": "Jul", "taxa_crescimento": 4.2, "meta_crescimento": 5},
+    {"month": "Ago", "taxa_crescimento": 4.0, "meta_crescimento": 5},
+    {"month": "Set", "taxa_crescimento": 5.1, "meta_crescimento": 5},
+    {"month": "Out", "taxa_crescimento": 3.7, "meta_crescimento": 5},
+    {"month": "Nov", "taxa_crescimento": 5.9, "meta_crescimento": 5},
+    {"month": "Dez", "taxa_crescimento": 5.5, "meta_crescimento": 5}
   ],
   "regionData": [
     {"regiao": "Sudeste", "atual": 45, "projecao": 52},
@@ -213,8 +280,9 @@ Retorne um JSON com a seguinte estrutura EXATA (preencha com dados calculados):
   "aiInsights": "Análise narrativa detalhada com insights, recomendações e estratégias baseadas nos dados fornecidos..."
 }
 
-**INSTRUÇÕES CRÍTICAS:**
-1. Se CSV foi fornecido, USE os dados reais para calcular projeções baseadas em tendências históricas
+**INSTRUÇÕES CRÍTICAS (OBRIGATÓRIAS):**
+
+1. Se CSV foi fornecido, usar os dados reais, nunca ignorar, USE os dados reais para calcular projeções baseadas em tendências históricas
 2. Calcule médias móveis, sazonalidade e tendências de crescimento do CSV
 3. Aplique a meta de crescimento informada (${
         formData.growthGoal
@@ -233,10 +301,57 @@ Retorne um JSON com a seguinte estrutura EXATA (preencha com dados calculados):
 9. Todos os valores numéricos devem ser CALCULADOS e REALISTAS, não aleatórios
 10. vendas_reais deve ser null para meses futuros (a partir do mês atual)
 11. Os valores devem mostrar uma progressão lógica e coerente
-12. aiInsights deve conter análise detalhada em português com insights acionáveis
+12. **CRÍTICO:** Em profitProjection, o campo "lucro" DEVE SEMPRE ser POSITIVO e calculado como: lucro = receita - custos. NUNCA retorne valores negativos ou valores absurdos como -1000000. Se os custos forem maiores que a receita, ajuste os custos ou a receita para garantir margem positiva realista.
+13. **CRÍTICO:** O campo aiInsights DEVE SER FORMATADO EM MARKDOWN com:
+    - Títulos usando ## e ###
+    - Listas usando - ou *
+    - Negrito usando **texto**
+    - Itálico usando *texto*
+    - Parágrafos separados por linha em branco
+    - Estrutura clara: Resumo, Análise Detalhada, Oportunidades, Riscos, Recomendações
+Exemplo de formato para aiInsights:
+
+## Resumo Executivo
+
+Baseado na análise dos dados fornecidos, identificamos **oportunidades significativas** de crescimento...
+
+## Análise Detalhada
+
+### Projeção de Vendas
+- Janeiro a Junho mostram tendência de crescimento de X%
+- Sazonalidade positiva esperada em novembro/dezembro
+
+### Estrutura de Custos
+O lucro líquido médio projetado é de **R$ XX mil/mês**...
+
+## Recomendações Estratégicas
+
+1. **Investimento em Marketing**: Alocar 35% do orçamento
+2. **Expansão Regional**: Foco no Sudeste
+3. **Canais Digitais**: Priorizar WhatsApp (ROI de 5.1x)
+
+Aplicar:
+
+Média móvel
+
+Sazonalidade
+
+Tendência
+
+Adaptar margens ao nicho.
+
+Ajustar canais reais escolhidos pelo usuário.
+
+Adaptar tudo para a região selecionada.
+
+NUNCA gerar números aleatórios.
+
+Projeções devem ser coerentes e progressivas.
+
+aiInsights deve trazer uma análise profunda, estratégica e acionável, escrita em português claro e persuasivo.
+
 `;
 
-      // Generate with JSON schema enforcement
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
         contents: prompt,
@@ -270,6 +385,12 @@ Retorne um JSON com a seguinte estrutura EXATA (preencha com dados calculados):
 
   if (currentView === "dashboard") {
     window.scrollTo({ top: 0, behavior: "smooth" });
+
+    if (!dashboardData) {
+      setCurrentView("main");
+      return null;
+    }
+
     return (
       <DashboardView
         onBack={() => setCurrentView("main")}
