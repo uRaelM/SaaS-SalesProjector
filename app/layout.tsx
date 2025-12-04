@@ -5,9 +5,9 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
-  title: "v0 App",
-  description: "Created with v0",
-  generator: "v0.app",
+  title: "Projetor de vendas inteligente para a matéria de SIGEE - IFAL",
+  description: "Projetor de vendas inteligente para a matéria de SIGEE - IFAL",
+  generator: "Next.js",
 };
 
 export default function RootLayout({
